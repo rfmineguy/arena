@@ -79,6 +79,7 @@ char *arena_sprintf(Arena *a, const char *format, ...);
 char *arena_vsprintf(Arena *a, const char *format, va_list args);
 #endif // ARENA_NOSTDIO
 
+size_t arena_bytes(Arena *a);
 Arena_Mark arena_snapshot(Arena *a);
 void arena_reset(Arena *a);
 void arena_rewind(Arena *a, Arena_Mark m);
@@ -386,6 +387,14 @@ char *arena_sprintf(Arena *a, const char *format, ...)
     return result;
 }
 #endif // ARENA_NOSTDIO
+
+size_t arena_bytes(Arena *a) {
+	size_t bytes_total = 0;
+	for (Region* r = a->begin; r != NULL; r = r->next) {
+		bytes_total += r->count * sizeof(uintptr_t);
+	}
+	return bytes_total;
+}
 
 Arena_Mark arena_snapshot(Arena *a)
 {
